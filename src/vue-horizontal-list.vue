@@ -1,5 +1,5 @@
 <template>
-  <div class="vue-horizontal-list" ref="container">
+  <div class="vue-horizontal-list vhl-btn-right--list" ref="container">
     <div class="vhl-navigation" v-if="width.window > _options.navigation.start">
       <div @click="prev" v-if="_hasPrev"
            class="vhl-btn-left">
@@ -9,7 +9,7 @@
       </div>
 
       <div @click="next" v-if="_hasNext"
-           class="vhl-btn-right">
+           class="vhl-btn-right vhl-btn-right-custom">
         <svg :fill="_options.navigation.color" width="32px" height="32px" viewBox="0 0 24 24">
           <path d="M13.314 12.071l-4.95-4.95a1 1 0 0 1 1.414-1.414l5.657 5.657a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414-1.414l4.95-4.95z"/>
         </svg>
@@ -303,9 +303,8 @@
 
   .vhl-item {
     box-sizing: content-box;
-
-    padding-top: 24px;
-    padding-bottom: 24px;
+    /*padding-top: 24px;*/
+    /*padding-bottom: 24px;*/
   }
 
   .vhl-list > * {
