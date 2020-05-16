@@ -2,7 +2,7 @@
     <div class="vue-horizontal-list vhl-btn-right--list" ref="container">
         <div class="vhl-navigation" v-if="width.window > _options.navigation.start">
             <div @click="prev" v-if="_hasPrev"
-                 class="vhl-btn-left">
+                 class="vhl-btn-left vhl-btn-left-custom">
                 <svg :fill="_options.navigation.color" width="32px" height="32px" viewBox="0 0 24 24">
                     <path d="M10.757 12l4.95 4.95a1 1 0 1 1-1.414 1.414l-5.657-5.657a1 1 0 0 1 0-1.414l5.657-5.657a1 1 0 0 1 1.414 1.414L10.757 12z"/>
                 </svg>

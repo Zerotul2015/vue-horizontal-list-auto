@@ -112,8 +112,7 @@ var script = {
       };
 
       if (this.items.length < 5 && this.items.length) {
-        var countItems = this.items.length;
-        responsive5.size = countItems;
+        responsive5.size = this.items.length;
 
         if (responsive5.size > responsive4.size) {
           responsive4.size = responsive5.size - 1;
@@ -379,7 +378,7 @@ var __vue_render__ = function __vue_render__() {
   return _c('div', {
     ref: "container",
     staticClass: "vue-horizontal-list vhl-btn-right--list"
-  }, [_vm._ssrNode((_vm.width.window > _vm._options.navigation.start ? "<div class=\"vhl-navigation\">" + (_vm._hasPrev ? "<div class=\"vhl-btn-left\"><svg" + _vm._ssrAttr("fill", _vm._options.navigation.color) + " width=\"32px\" height=\"32px\" viewBox=\"0 0 24 24\"><path d=\"M10.757 12l4.95 4.95a1 1 0 1 1-1.414 1.414l-5.657-5.657a1 1 0 0 1 0-1.414l5.657-5.657a1 1 0 0 1 1.414 1.414L10.757 12z\"></path></svg></div>" : "<!---->") + " " + (_vm._hasNext ? "<div class=\"vhl-btn-right vhl-btn-right-custom\"><svg" + _vm._ssrAttr("fill", _vm._options.navigation.color) + " width=\"32px\" height=\"32px\" viewBox=\"0 0 24 24\"><path d=\"M13.314 12.071l-4.95-4.95a1 1 0 0 1 1.414-1.414l5.657 5.657a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414-1.414l4.95-4.95z\"></path></svg></div>" : "<!---->") + "</div>" : "<!---->") + " "), _vm._ssrNode("<div class=\"vhl-container\"" + _vm._ssrStyle(null, _vm._style.container, null) + ">", "</div>", [_vm._ssrNode("<div" + _vm._ssrClass("vhl-list", _vm._options.list.class) + _vm._ssrStyle(null, _vm._style.list, null) + ">", "</div>", [_vm._l(_vm.items, function (item) {
+  }, [_vm._ssrNode((_vm.width.window > _vm._options.navigation.start ? "<div class=\"vhl-navigation\">" + (_vm._hasPrev ? "<div class=\"vhl-btn-left vhl-btn-left-custom\"><svg" + _vm._ssrAttr("fill", _vm._options.navigation.color) + " width=\"32px\" height=\"32px\" viewBox=\"0 0 24 24\"><path d=\"M10.757 12l4.95 4.95a1 1 0 1 1-1.414 1.414l-5.657-5.657a1 1 0 0 1 0-1.414l5.657-5.657a1 1 0 0 1 1.414 1.414L10.757 12z\"></path></svg></div>" : "<!---->") + " " + (_vm._hasNext ? "<div class=\"vhl-btn-right vhl-btn-right-custom\"><svg" + _vm._ssrAttr("fill", _vm._options.navigation.color) + " width=\"32px\" height=\"32px\" viewBox=\"0 0 24 24\"><path d=\"M13.314 12.071l-4.95-4.95a1 1 0 0 1 1.414-1.414l5.657 5.657a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414-1.414l4.95-4.95z\"></path></svg></div>" : "<!---->") + "</div>" : "<!---->") + " "), _vm._ssrNode("<div class=\"vhl-container\"" + _vm._ssrStyle(null, _vm._style.container, null) + ">", "</div>", [_vm._ssrNode("<div" + _vm._ssrClass("vhl-list", _vm._options.list.class) + _vm._ssrStyle(null, _vm._style.list, null) + ">", "</div>", [_vm._l(_vm.items, function (item) {
     return _vm._ssrNode("<div" + _vm._ssrClass("vhl-item", _vm._options.item.class) + _vm._ssrStyle(null, _vm._style.item, null) + ">", "</div>", [_vm._t("default", [_vm._v(_vm._s(item))], {
       "item": item
     })], 2);
@@ -391,8 +390,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-5db8b71a_0", {
-    source: ".vue-horizontal-list[data-v-5db8b71a]{position:relative}.vhl-navigation[data-v-5db8b71a]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-5db8b71a],.vhl-btn-right[data-v-5db8b71a]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-5db8b71a]:hover,.vhl-btn-right[data-v-5db8b71a]:hover{cursor:pointer}.vhl-btn-left[data-v-5db8b71a]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-5db8b71a]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-5db8b71a]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-5db8b71a]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-5db8b71a]{box-sizing:content-box}.vhl-list>*[data-v-5db8b71a]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-5db8b71a]{z-index:1}",
+  inject("data-v-2da9dcad_0", {
+    source: ".vue-horizontal-list[data-v-2da9dcad]{position:relative}.vhl-navigation[data-v-2da9dcad]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-2da9dcad],.vhl-btn-right[data-v-2da9dcad]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-2da9dcad]:hover,.vhl-btn-right[data-v-2da9dcad]:hover{cursor:pointer}.vhl-btn-left[data-v-2da9dcad]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-2da9dcad]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-2da9dcad]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-2da9dcad]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-2da9dcad]{box-sizing:content-box}.vhl-list>*[data-v-2da9dcad]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-2da9dcad]{z-index:1}",
     map: undefined,
     media: undefined
   });
@@ -400,10 +399,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-5db8b71a";
+var __vue_scope_id__ = "data-v-2da9dcad";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-5db8b71a";
+var __vue_module_identifier__ = "data-v-2da9dcad";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
