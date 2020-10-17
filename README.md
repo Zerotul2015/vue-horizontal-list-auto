@@ -57,6 +57,11 @@ const options = {
     {start: 992, end: 1200, size: 4},
     {start: 1200, size: 5}
   ],
+  autotoggle: [
+    false, //enable auto next slide
+    0,  // time for toggle ms
+    false   // repeat 
+  ],
   navigation: {
     // when to show navigation
     start: 992,
