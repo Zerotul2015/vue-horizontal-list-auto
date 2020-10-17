@@ -260,9 +260,12 @@ export default {
   },
   watch: {
     position: function (newVal) {
-      if (this._options.autoToggle[0]) {
-        let timer = this._options.autoToggle[1];
-        setTimeout(f => this.next(), timer);
+      console.log(newVal);
+      console.log('проверка autotoggle');
+      if (this._options.autoToggle[0] && this._hasNext) {
+        console.log('перед переключением');
+          let timer = this._options.autoToggle[1];
+          setTimeout(f => this.next(), timer);
       }
     }
   },
