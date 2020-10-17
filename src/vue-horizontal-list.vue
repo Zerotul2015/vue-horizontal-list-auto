@@ -106,6 +106,12 @@ export default {
 
     this.$resize()
     window.addEventListener('resize', this.$resize)
+
+    if(this._options.autoToggle[0] && this._hasNext){
+      setTimeout(r=> {
+        this.next()
+      },this._options.autoToggle[1]);
+    }
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.$resize)
