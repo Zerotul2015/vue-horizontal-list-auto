@@ -1,7 +1,7 @@
 {
   "name": "vue-horizontal-list-auto",
   "version": "1.0",
-  "description": "A pure vue ssr friendly horizontal list implementation",
+  "description": "A pure vue ssr friendly horizontal list implementation.",
   "author": "Zerotul2015",
   "repository": {
     "type": "git",
