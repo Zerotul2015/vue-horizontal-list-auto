@@ -28,6 +28,7 @@
     "build:unpkg": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife"
   },
   "dependencies": {
+    "acorn": "^8.0.4",
     "smoothscroll-polyfill": "^0.4.4"
   },
   "devDependencies": {
