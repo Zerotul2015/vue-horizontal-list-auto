@@ -52,8 +52,8 @@ var script = {
      *
      * autotoggle
      * Auto change next slider
-     * Example([status, timer ms]):
-     * [true,5000]
+     * Example([enable(bool), timer ms, repeat(bool)]):
+     * [true, 5000, false]
      *
      */
     options: {
@@ -101,10 +101,14 @@ var script = {
     _options: function _options() {
       var options = this.options; //auto toggle sliders
 
-      var autoToggle = [false, 0];
+      var autoToggle = [false, 0, false]; //enable, timer ms, repeat
 
       if (options.autotoggle && options.autotoggle[0] && options.autotoggle[1]) {
         autoToggle = options.autotoggle;
+
+        if (options.autotoggle[3]) {
+          autoToggle[3] = true;
+        }
       }
 
       var responsive1 = {
@@ -247,15 +251,20 @@ var script = {
     position: function position(newVal) {
       var _this2 = this;
 
-      console.log(newVal);
-      console.log('проверка autotoggle');
-
-      if (this._options.autoToggle[0] && this._hasNext) {
-        console.log('перед переключением');
+      if (this._options.autoToggle[0]) {
         var timer = this._options.autoToggle[1];
-        setTimeout(function (f) {
-          return _this2.next();
-        }, timer);
+
+        if (this._hasNext) {
+          setTimeout(function (f) {
+            return _this2.next();
+          }, timer);
+        } else {
+          if (this._options.autoToggle[3] && this._hasPrev) {
+            setTimeout(function (f) {
+              return _this2.position = 0;
+            }, timer);
+          }
+        }
       }
     }
   },
@@ -427,8 +436,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-28de6616_0", {
-    source: ".vue-horizontal-list[data-v-28de6616]{position:relative}.vhl-navigation[data-v-28de6616]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-28de6616],.vhl-btn-right[data-v-28de6616]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-28de6616]:hover,.vhl-btn-right[data-v-28de6616]:hover{cursor:pointer}.vhl-btn-left[data-v-28de6616]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-28de6616]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-28de6616]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-28de6616]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-28de6616]{box-sizing:content-box}.vhl-list>*[data-v-28de6616]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-28de6616]{z-index:1}",
+  inject("data-v-ca8a5e4a_0", {
+    source: ".vue-horizontal-list[data-v-ca8a5e4a]{position:relative}.vhl-navigation[data-v-ca8a5e4a]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-ca8a5e4a],.vhl-btn-right[data-v-ca8a5e4a]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-ca8a5e4a]:hover,.vhl-btn-right[data-v-ca8a5e4a]:hover{cursor:pointer}.vhl-btn-left[data-v-ca8a5e4a]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-ca8a5e4a]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-ca8a5e4a]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-ca8a5e4a]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-ca8a5e4a]{box-sizing:content-box}.vhl-list>*[data-v-ca8a5e4a]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-ca8a5e4a]{z-index:1}",
     map: undefined,
     media: undefined
   });
@@ -436,10 +445,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-28de6616";
+var __vue_scope_id__ = "data-v-ca8a5e4a";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-28de6616";
+var __vue_module_identifier__ = "data-v-ca8a5e4a";
 /* functional template */
 
 var __vue_is_functional_template__ = false;

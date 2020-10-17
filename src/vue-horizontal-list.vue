@@ -73,8 +73,8 @@ export default {
      *
      * autotoggle
      * Auto change next slider
-     * Example([status, timer ms]):
-     * [true,5000]
+     * Example([enable(bool), timer ms, repeat(bool)]):
+     * [true, 5000, false]
      *
      */
     options: {
@@ -107,10 +107,10 @@ export default {
     this.$resize()
     window.addEventListener('resize', this.$resize)
 
-    if(this._options.autoToggle[0] && this._hasNext){
-      setTimeout(r=> {
+    if (this._options.autoToggle[0] && this._hasNext) {
+      setTimeout(r => {
         this.next()
-      },this._options.autoToggle[1]);
+      }, this._options.autoToggle[1]);
     }
   },
   beforeDestroy() {
@@ -121,11 +121,13 @@ export default {
       const options = this.options
 
       //auto toggle sliders
-      let autoToggle = [false, 0]
+      let autoToggle = [false, 0, false]; //enable, timer ms, repeat
       if (options.autotoggle && options.autotoggle[0] && options.autotoggle[1]) {
         autoToggle = options.autotoggle;
+        if(options.autotoggle[3]){
+          autoToggle[3] = true;
+        }
       }
-
 
       let responsive1 = {end: 576, size: 1};
       let responsive2 = {start: 576, end: 768, size: 2};
@@ -266,12 +268,16 @@ export default {
   },
   watch: {
     position: function (newVal) {
-      console.log(newVal);
-      console.log('проверка autotoggle');
-      if (this._options.autoToggle[0] && this._hasNext) {
-        console.log('перед переключением');
-          let timer = this._options.autoToggle[1];
+      if (this._options.autoToggle[0]) {
+        let timer = this._options.autoToggle[1];
+        if (this._hasNext) {
           setTimeout(f => this.next(), timer);
+        }
+        else{
+          if(this._options.autoToggle[3] && this._hasPrev){
+            setTimeout(f => this.position = 0, timer);
+          }
+        }
       }
     }
   },
