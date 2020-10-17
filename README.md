@@ -9,9 +9,7 @@ Check it out: [vue-horizontal-list demo](https://nuxt-app.now.sh/vue-horizontal-
 
 ## Installation
 ```shell script
-npm i vue-horizontal-list
-# or
-yarn add vue-horizontal-list
+yarn add https://github.com/Zerotul2015/vue-horizontal-list-auto#1.0.1
 ```
 
 ## Features
