@@ -262,7 +262,7 @@ export default {
     position: function (newVal) {
       if (this._options.autoToggle[0]) {
         let timer = this._options.autoToggle[1];
-        setTimeout(this.next(), timer);
+        setTimeout(f => this.next(), timer);
       }
     }
   },
