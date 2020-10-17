@@ -33,6 +33,13 @@ var script = {
      * {start: 768, end: 992, size: 3},
      * {start: 992, end: 1200, size: 4},
      * {start: 1200, size: 5}]
+     *
+     *
+     * autotoggle
+     * Auto change next slider
+     * Example([status, timer ms]):
+     * [true,5000]
+     *
      */
     options: {
       type: Object,
@@ -73,7 +80,14 @@ var script = {
 
   computed: {
     _options() {
-      const options = this.options;
+      const options = this.options; //auto toggle sliders
+
+      let autoToggle = [false, 0];
+
+      if (options.autotoggle && options.autotoggle[0] && options.autotoggle[1]) {
+        autoToggle = options.autotoggle;
+      }
+
       let responsive1 = {
         end: 576,
         size: 1
@@ -121,6 +135,7 @@ var script = {
       }
 
       return {
+        autoToggle: autoToggle,
         navigation: {
           start: options && options.navigation && options.navigation.start || 992,
           color: options && options.navigation && options.navigation.color || '#000'
@@ -211,6 +226,14 @@ var script = {
       return this.position > 0;
     }
 
+  },
+  watch: {
+    position: function (newVal) {
+      if (this._options.autoToggle[0]) {
+        let timer = this._options.autoToggle[1];
+        setTimeout(this.next(), timer);
+      }
+    }
   },
   methods: {
     /**
@@ -448,8 +471,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-2da9dcad_0", {
-    source: ".vue-horizontal-list[data-v-2da9dcad]{position:relative}.vhl-navigation[data-v-2da9dcad]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-2da9dcad],.vhl-btn-right[data-v-2da9dcad]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-2da9dcad]:hover,.vhl-btn-right[data-v-2da9dcad]:hover{cursor:pointer}.vhl-btn-left[data-v-2da9dcad]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-2da9dcad]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-2da9dcad]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-2da9dcad]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-2da9dcad]{box-sizing:content-box}.vhl-list>*[data-v-2da9dcad]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-2da9dcad]{z-index:1}",
+  inject("data-v-b3eab998_0", {
+    source: ".vue-horizontal-list[data-v-b3eab998]{position:relative}.vhl-navigation[data-v-b3eab998]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-b3eab998],.vhl-btn-right[data-v-b3eab998]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-b3eab998]:hover,.vhl-btn-right[data-v-b3eab998]:hover{cursor:pointer}.vhl-btn-left[data-v-b3eab998]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-b3eab998]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-b3eab998]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-b3eab998]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-b3eab998]{box-sizing:content-box}.vhl-list>*[data-v-b3eab998]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-b3eab998]{z-index:1}",
     map: undefined,
     media: undefined
   });
@@ -457,7 +480,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-2da9dcad";
+const __vue_scope_id__ = "data-v-b3eab998";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
