@@ -95,7 +95,15 @@ export default {
       width: {
         container: 0,
         window: 576
-      }
+      },
+      /**
+       * Debounce timer of the scroll
+       */
+      scrollTimer: null,
+      /**
+       * Interval of the autoPlay
+       */
+      autoPlayInterval: null,
     }
   },
   mounted() {
@@ -107,10 +115,8 @@ export default {
     this.$resize()
     window.addEventListener('resize', this.$resize)
 
-    if (this._options.autoToggle[0] && this._hasNext) {
-      setTimeout(r => {
-        this.next()
-      }, this._options.autoToggle[1]);
+    if (this._options.autoplay.play) {
+      this.runAutoPlay();
     }
   },
   beforeDestroy() {
@@ -119,15 +125,6 @@ export default {
   computed: {
     _options() {
       const options = this.options
-
-      //auto toggle sliders
-      let autoToggle = [false, 0, false]; //enable, timer ms, repeat
-      if (options.autotoggle && options.autotoggle[0] && options.autotoggle[1]) {
-        autoToggle = options.autotoggle;
-        if(options.autotoggle[3]){
-          autoToggle[3] = true;
-        }
-      }
 
       let responsive1 = {end: 576, size: 1};
       let responsive2 = {start: 576, end: 768, size: 2};
@@ -157,7 +154,6 @@ export default {
       }
 
       return {
-        autoToggle: autoToggle,
         navigation: {
           start: options && options.navigation && options.navigation.start || 992,
           color: options && options.navigation && options.navigation.color || '#000',
@@ -181,6 +177,14 @@ export default {
           responsive4,
           responsive5,
         ],
+        position: {
+          start: options?.position?.start ?? 0,
+        },
+        autoplay: {
+          play: options?.autoplay?.play ?? false,
+          speed: options?.autoplay?.speed ?? 2000,
+          repeat: options?.autoplay?.repeat ?? false,
+        },
       }
     },
 
@@ -267,19 +271,13 @@ export default {
     },
   },
   watch: {
-    position: function (newVal) {
-      if (this._options.autoToggle[0]) {
-        let timer = this._options.autoToggle[1];
-        if (this._hasNext) {
-          setTimeout(f => this.next(), timer);
-        }
-        else{
-          if(this._options.autoToggle[3] && this._hasPrev){
-            setTimeout(f => this.position = 0, timer);
-          }
-        }
+    "options.autoplay.play": function (newVal, oldVal) {
+      if (!newVal) {
+        this.stopAutoPlay();
+      } else {
+        this.runAutoPlay();
       }
-    }
+    },
   },
   methods: {
     /**
@@ -292,7 +290,32 @@ export default {
       const left = this._itemWidth * this.position + this.position * this._options.item.padding
       this.$refs.list.scrollTo({top: 0, left: left, behavior: 'smooth'})
     },
-
+    /**
+     * Run autoPlay slide show
+     */
+    runAutoPlay() {
+      this.autoPlayInterval = setInterval(
+          function () {
+            if (
+                this._options.autoplay.repeat &&
+                this.position === this._length - this._size
+            ) {
+              this.position = 0;
+              this.go(this.position);
+            } else {
+              this.position += 1;
+              this.go(this.position);
+            }
+          }.bind(this),
+          this._options.autoplay.speed
+      );
+    },
+    /**
+     * Stop autoPlay slide show
+     */
+    stopAutoPlay() {
+      clearInterval(this.autoPlayInterval);
+    },
     /**
      * Go to a set of previous items
      */
@@ -305,6 +328,27 @@ export default {
      */
     next() {
       this.go(this.position + this._size)
+    },
+    /**
+     * On horizontal scroll re-evaluate the actual position
+     */
+    scrollHandler() {
+      clearTimeout(this.scrollTimer);
+      //Renew timer
+      this.scrollTimer = setTimeout(
+          function () {
+            const parentLeftOffset = this.$refs["list"].getBoundingClientRect()
+                .left;
+            let items = this._items.map((item, index) => {
+              const itemLeftOffset = this.$refs.item[
+                  index
+                  ].getBoundingClientRect().left;
+              return Math.abs(itemLeftOffset - parentLeftOffset);
+            });
+            this.position = items.indexOf(Math.min(...items));
+          }.bind(this),
+          50
+      );
     },
   }
 }
