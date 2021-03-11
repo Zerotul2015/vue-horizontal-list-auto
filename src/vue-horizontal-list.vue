@@ -19,10 +19,25 @@
     </div>
 
     <div class="vhl-container" :style="_style.container">
-      <div class="vhl-list" ref="list" :class="_options.list.class" :style="_style.list">
-        <div v-for="item in items" ref="item" class="vhl-item" :class="_options.item.class"
-             :style="_style.item">
-          <slot v-bind:item="item">{{ item }}</slot>
+      <div
+          class="vhl-list"
+          ref="list"
+          :class="_options.list.class"
+          :style="_style.list"
+          @scroll="scrollHandler"
+      >
+        <div
+            v-for="item in _items"
+            ref="item"
+            class="vhl-item"
+            :class="_options.item.class"
+            :style="_style.item"
+        >
+          <slot v-if="item.type === 'start'" name="start"></slot>
+          <slot v-else-if="item.type === 'end'" name="end"></slot>
+          <slot v-else-if="item.type === 'item'" v-bind:item="item.item">{{
+              item
+          }}</slot>
         </div>
 
         <div :style="_style.tail">
@@ -71,7 +86,7 @@ export default {
      * {start: 1200, size: 5}]
      *
      *
-     * autotoggle
+     * autoplay
      * Auto change next slider
      * Example([enable(bool), timer ms, repeat(bool)]):
      * [true, 5000, false]
@@ -108,21 +123,40 @@ export default {
   },
   mounted() {
     this.$resize = () => {
-      this.width.window = window.innerWidth
-      this.width.container = this.$refs.container.clientWidth
+      this.width.window = window.innerWidth;
+      this.width.container = this.$refs.container.clientWidth;
     }
 
-    this.$resize()
-    window.addEventListener('resize', this.$resize)
+    this.$resize();
+    window.addEventListener('resize', this.$resize);
+
+    if (this._options.position.start) {
+      this.$nextTick(() => {
+        this.go(this._options.position.start);
+      });
+    }
 
     if (this._options.autoplay.play) {
       this.runAutoPlay();
     }
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.$resize)
+    window.removeEventListener('resize', this.$resize);
+    if (this.autoPlayInterval) {
+      clearInterval(this.autoPlayInterval);
+    }
   },
   computed: {
+    _items() {
+      return [
+        ...(this.$slots["start"] ? [{ type: "start" }] : []),
+        ...this.items.map((value) => ({ type: "item", item: value })),
+        ...(this.$slots["end"] ? [{ type: "end" }] : []),
+      ];
+    },
+    _length() {
+      return this._items.length;
+    },
     _options() {
       const options = this.options
 
