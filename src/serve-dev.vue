@@ -6,29 +6,29 @@
     </div>
 
     <section>
-      <vue-horizontal-list :items="items" :options="{responsive: [{size: 1}]}">
+      <vue-horizontal-list-auto :items="items" :options="{responsive: [{size: 1}]}">
         <template v-slot:default="{item}">
           <div class="item">
             <h5>{{item.title}}</h5>
             <p>{{item.content}}</p>
           </div>
         </template>
-      </vue-horizontal-list>
+      </vue-horizontal-list-auto>
     </section>
 
     <section>
-      <vue-horizontal-list :items="items" :options="{responsive: [{end: 576, size: 1}, {size: 2}]}">
+      <vue-horizontal-list-auto :items="items" :options="{responsive: [{end: 576, size: 1}, {size: 2}]}">
         <template v-slot:default="{item}">
           <div class="item">
             <h5>{{item.title}}</h5>
             <p>{{item.content}}</p>
           </div>
         </template>
-      </vue-horizontal-list>
+      </vue-horizontal-list-auto>
     </section>
 
     <section>
-      <vue-horizontal-list :items="items"
+      <vue-horizontal-list-auto :items="items"
                            :options="{responsive: [{end: 576, size: 1}, {start: 576, end: 768, size: 2},{size: 3}]}">
         <template v-slot:default="{item}">
           <div class="item">
@@ -36,11 +36,11 @@
             <p>{{item.content}}</p>
           </div>
         </template>
-      </vue-horizontal-list>
+      </vue-horizontal-list-auto>
     </section>
 
     <section>
-      <vue-horizontal-list :items="items"
+      <vue-horizontal-list-auto :items="items"
                            :options="{responsive: [{end: 576, size: 1}, {start: 576, end: 768, size: 2},{start: 768, end: 992, size: 3},{size: 4}]}">
         <template v-slot:default="{item}">
           <div class="item">
@@ -48,18 +48,18 @@
             <p>{{item.content}}</p>
           </div>
         </template>
-      </vue-horizontal-list>
+      </vue-horizontal-list-auto>
     </section>
 
     <section>
-      <vue-horizontal-list :items="items">
+      <vue-horizontal-list-auto :items="items">
         <template v-slot:default="{item}">
           <div class="item">
             <h5>{{item.title}}</h5>
             <p>{{item.content}}</p>
           </div>
         </template>
-      </vue-horizontal-list>
+      </vue-horizontal-list-auto>
     </section>
 
   </div>
