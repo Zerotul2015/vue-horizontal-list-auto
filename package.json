@@ -17,9 +17,9 @@
   ],
   "license": "MIT",
   "private": false,
-  "main": "dist/vue-horizontal-list.ssr.js",
-  "module": "dist/vue-horizontal-list.esm.js",
-  "unpkg": "dist/vue-horizontal-list.min.js",
+  "main": "dist/vue-horizontal-list-auto.ssr.js",
+  "module": "dist/vue-horizontal-list-auto.esm.js",
+  "unpkg": "dist/vue-horizontal-list-auto.min.js",
   "scripts": {
     "serve": "vue-cli-service serve src/serve-dev.js",
     "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js",

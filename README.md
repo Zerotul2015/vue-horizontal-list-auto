@@ -1,4 +1,4 @@
-# vue-horizontal-list
+# vue-horizontal-list-auto(fork [vue-horizontal-list](https://github.com/fuxingloh/vue-horizontal-list/issues/new)]
 A pure vue horizontal list implementation with minimal dependencies, ssr support, mobile friendly, touch friendly and responsive. 
 I created this because I like how AirBnb does their horizontal list, I couldn't find a library that is simple and close to it.
 
