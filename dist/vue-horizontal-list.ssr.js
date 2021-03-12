@@ -1,21 +1,34 @@
 'use strict';Object.defineProperty(exports,'__esModule',{value:true});function _interopDefault(e){return(e&&(typeof e==='object')&&'default'in e)?e['default']:e}var smoothscroll=_interopDefault(require('smoothscroll-polyfill'));function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
 }
 
 function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
 }
 
 function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+}
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+  return arr2;
 }
 
 function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }smoothscroll.polyfill();
 var script = {
   name: "VueHorizontalList",
@@ -50,7 +63,7 @@ var script = {
      * {start: 1200, size: 5}]
      *
      *
-     * autotoggle
+     * autoplay
      * Auto change next slider
      * Example([enable(bool), timer ms, repeat(bool)]):
      * [true, 5000, false]
@@ -74,7 +87,17 @@ var script = {
       width: {
         container: 0,
         window: 576
-      }
+      },
+
+      /**
+       * Debounce timer of the scroll
+       */
+      scrollTimer: null,
+
+      /**
+       * Interval of the autoPlay
+       */
+      autoPlayInterval: null
     };
   },
   mounted: function mounted() {
@@ -88,29 +111,43 @@ var script = {
     this.$resize();
     window.addEventListener('resize', this.$resize);
 
-    if (this._options.autoToggle[0] && this._hasNext) {
-      setTimeout(function (r) {
-        _this.next();
-      }, this._options.autoToggle[1]);
+    if (this._options.position.start) {
+      this.$nextTick(function () {
+        _this.go(_this._options.position.start);
+      });
+    }
+
+    if (this._options.autoplay.play) {
+      this.runAutoPlay();
     }
   },
   beforeDestroy: function beforeDestroy() {
     window.removeEventListener('resize', this.$resize);
+
+    if (this.autoPlayInterval) {
+      clearInterval(this.autoPlayInterval);
+    }
   },
   computed: {
+    _items: function _items() {
+      return [].concat(_toConsumableArray(this.$slots["start"] ? [{
+        type: "start"
+      }] : []), _toConsumableArray(this.items.map(function (value) {
+        return {
+          type: "item",
+          item: value
+        };
+      })), _toConsumableArray(this.$slots["end"] ? [{
+        type: "end"
+      }] : []));
+    },
+    _length: function _length() {
+      return this._items.length;
+    },
     _options: function _options() {
-      var options = this.options; //auto toggle sliders
+      var _options$position$sta, _options$position, _options$autoplay$pla, _options$autoplay, _options$autoplay$spe, _options$autoplay2, _options$autoplay$rep, _options$autoplay3;
 
-      var autoToggle = [false, 0, false]; //enable, timer ms, repeat
-
-      if (options.autotoggle && options.autotoggle[0] && options.autotoggle[1]) {
-        autoToggle = options.autotoggle;
-
-        if (options.autotoggle[3]) {
-          autoToggle[3] = true;
-        }
-      }
-
+      var options = this.options;
       var responsive1 = {
         end: 576,
         size: 1
@@ -158,7 +195,6 @@ var script = {
       }
 
       return {
-        autoToggle: autoToggle,
         navigation: {
           start: options && options.navigation && options.navigation.start || 992,
           color: options && options.navigation && options.navigation.color || '#000'
@@ -173,7 +209,15 @@ var script = {
           padding: options && options.list && options.list.padding || 24
         },
         responsive: [].concat(_toConsumableArray(options && options.responsive || []), [// Fallback default responsive
-        responsive1, responsive2, responsive3, responsive4, responsive5])
+        responsive1, responsive2, responsive3, responsive4, responsive5]),
+        position: {
+          start: (_options$position$sta = options === null || options === void 0 ? void 0 : (_options$position = options.position) === null || _options$position === void 0 ? void 0 : _options$position.start) !== null && _options$position$sta !== void 0 ? _options$position$sta : 0
+        },
+        autoplay: {
+          play: (_options$autoplay$pla = options === null || options === void 0 ? void 0 : (_options$autoplay = options.autoplay) === null || _options$autoplay === void 0 ? void 0 : _options$autoplay.play) !== null && _options$autoplay$pla !== void 0 ? _options$autoplay$pla : false,
+          speed: (_options$autoplay$spe = options === null || options === void 0 ? void 0 : (_options$autoplay2 = options.autoplay) === null || _options$autoplay2 === void 0 ? void 0 : _options$autoplay2.speed) !== null && _options$autoplay$spe !== void 0 ? _options$autoplay$spe : 2000,
+          repeat: (_options$autoplay$rep = options === null || options === void 0 ? void 0 : (_options$autoplay3 = options.autoplay) === null || _options$autoplay3 === void 0 ? void 0 : _options$autoplay3.repeat) !== null && _options$autoplay$rep !== void 0 ? _options$autoplay$rep : false
+        }
       };
     },
     _style: function _style() {
@@ -248,23 +292,11 @@ var script = {
     }
   },
   watch: {
-    position: function position(newVal) {
-      var _this2 = this;
-
-      if (this._options.autoToggle[0]) {
-        var timer = this._options.autoToggle[1];
-
-        if (this._hasNext) {
-          setTimeout(function (f) {
-            return _this2.next();
-          }, timer);
-        } else {
-          if (this._options.autoToggle[3] && this._hasPrev) {
-            setTimeout(function (f) {
-              return _this2.position = 0;
-            }, timer);
-          }
-        }
+    "options.autoplay.play": function optionsAutoplayPlay(newVal, oldVal) {
+      if (!newVal) {
+        this.stopAutoPlay();
+      } else {
+        this.runAutoPlay();
       }
     }
   },
@@ -284,6 +316,28 @@ var script = {
     },
 
     /**
+     * Run autoPlay slide show
+     */
+    runAutoPlay: function runAutoPlay() {
+      this.autoPlayInterval = setInterval(function () {
+        if (this._options.autoplay.repeat && this.position === this._length - this._size) {
+          this.position = 0;
+          this.go(this.position);
+        } else {
+          this.position += 1;
+          this.go(this.position);
+        }
+      }.bind(this), this._options.autoplay.speed);
+    },
+
+    /**
+     * Stop autoPlay slide show
+     */
+    stopAutoPlay: function stopAutoPlay() {
+      clearInterval(this.autoPlayInterval);
+    },
+
+    /**
      * Go to a set of previous items
      */
     prev: function prev() {
@@ -295,6 +349,27 @@ var script = {
      */
     next: function next() {
       this.go(this.position + this._size);
+    },
+
+    /**
+     * On horizontal scroll re-evaluate the actual position
+     */
+    scrollHandler: function scrollHandler() {
+      clearTimeout(this.scrollTimer); //Renew timer
+
+      this.scrollTimer = setTimeout(function () {
+        var _this2 = this;
+
+        var parentLeftOffset = this.$refs["list"].getBoundingClientRect().left;
+
+        var items = this._items.map(function (item, index) {
+          var itemLeftOffset = _this2.$refs.item[index].getBoundingClientRect().left;
+
+          return Math.abs(itemLeftOffset - parentLeftOffset);
+        });
+
+        this.position = items.indexOf(Math.min.apply(Math, _toConsumableArray(items)));
+      }.bind(this), 50);
     }
   }
 };function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier /* server only */, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
@@ -424,11 +499,34 @@ var __vue_render__ = function __vue_render__() {
   return _c('div', {
     ref: "container",
     staticClass: "vue-horizontal-list vhl-btn-right--list"
-  }, [_vm._ssrNode((_vm.width.window > _vm._options.navigation.start ? "<div class=\"vhl-navigation\">" + (_vm._hasPrev ? "<div class=\"vhl-btn-left vhl-btn-left-custom\"><svg" + _vm._ssrAttr("fill", _vm._options.navigation.color) + " width=\"32px\" height=\"32px\" viewBox=\"0 0 24 24\"><path d=\"M10.757 12l4.95 4.95a1 1 0 1 1-1.414 1.414l-5.657-5.657a1 1 0 0 1 0-1.414l5.657-5.657a1 1 0 0 1 1.414 1.414L10.757 12z\"></path></svg></div>" : "<!---->") + " " + (_vm._hasNext ? "<div class=\"vhl-btn-right vhl-btn-right-custom\"><svg" + _vm._ssrAttr("fill", _vm._options.navigation.color) + " width=\"32px\" height=\"32px\" viewBox=\"0 0 24 24\"><path d=\"M13.314 12.071l-4.95-4.95a1 1 0 0 1 1.414-1.414l5.657 5.657a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414-1.414l4.95-4.95z\"></path></svg></div>" : "<!---->") + "</div>" : "<!---->") + " "), _vm._ssrNode("<div class=\"vhl-container\"" + _vm._ssrStyle(null, _vm._style.container, null) + ">", "</div>", [_vm._ssrNode("<div" + _vm._ssrClass("vhl-list", _vm._options.list.class) + _vm._ssrStyle(null, _vm._style.list, null) + ">", "</div>", [_vm._l(_vm.items, function (item) {
-    return _vm._ssrNode("<div" + _vm._ssrClass("vhl-item", _vm._options.item.class) + _vm._ssrStyle(null, _vm._style.item, null) + ">", "</div>", [_vm._t("default", [_vm._v(_vm._s(item))], {
-      "item": item
-    })], 2);
-  }), _vm._ssrNode(" <div" + _vm._ssrStyle(null, _vm._style.tail, null) + "></div>")], 2)])], 2);
+  }, [_vm.width.window > _vm._options.navigation.start ? _vm._ssrNode("<div class=\"vhl-navigation\" data-v-6555a844>", "</div>", [_vm._t("nav-prev", [_vm._hasPrev ? _c('div', {
+    staticClass: "vhl-btn-left vhl-btn-left-custom",
+    on: {
+      "click": _vm.prev
+    }
+  }, [_c('svg', {
+    attrs: {
+      "fill": _vm._options.navigation.color,
+      "width": "32px",
+      "height": "32px",
+      "viewBox": "0 0 24 24"
+    }
+  }, [_c('path', {
+    attrs: {
+      "d": "M10.757 12l4.95 4.95a1 1 0 1 1-1.414 1.414l-5.657-5.657a1 1 0 0 1 0-1.414l5.657-5.657a1 1 0 0 1 1.414 1.414L10.757 12z"
+    }
+  })])]) : _vm._e()])], 2) : _vm._e(), _vm._ssrNode(" "), _vm._hasNext ? _vm._ssrNode("<div class=\"vhl-btn-right vhl-btn-right-custom\" data-v-6555a844>", "</div>", [_vm._t("nav-next", [_c('svg', {
+    attrs: {
+      "fill": _vm._options.navigation.color,
+      "width": "32px",
+      "height": "32px",
+      "viewBox": "0 0 24 24"
+    }
+  }, [_c('path', {
+    attrs: {
+      "d": "M13.314 12.071l-4.95-4.95a1 1 0 0 1 1.414-1.414l5.657 5.657a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414-1.414l4.95-4.95z"
+    }
+  })])])], 2) : _vm._e()], 2);
 };
 
 var __vue_staticRenderFns__ = [];
@@ -436,8 +534,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-ca8a5e4a_0", {
-    source: ".vue-horizontal-list[data-v-ca8a5e4a]{position:relative}.vhl-navigation[data-v-ca8a5e4a]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-ca8a5e4a],.vhl-btn-right[data-v-ca8a5e4a]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-ca8a5e4a]:hover,.vhl-btn-right[data-v-ca8a5e4a]:hover{cursor:pointer}.vhl-btn-left[data-v-ca8a5e4a]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-ca8a5e4a]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-ca8a5e4a]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-ca8a5e4a]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-ca8a5e4a]{box-sizing:content-box}.vhl-list>*[data-v-ca8a5e4a]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-ca8a5e4a]{z-index:1}",
+  inject("data-v-6555a844_0", {
+    source: ".vue-horizontal-list[data-v-6555a844]{position:relative}.vhl-navigation[data-v-6555a844]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-6555a844],.vhl-btn-right[data-v-6555a844]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-6555a844]:hover,.vhl-btn-right[data-v-6555a844]:hover{cursor:pointer}.vhl-btn-left[data-v-6555a844]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-6555a844]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-6555a844]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-6555a844]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-6555a844]{box-sizing:content-box}.vhl-list>*[data-v-6555a844]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-6555a844]{z-index:1}",
     map: undefined,
     media: undefined
   });
@@ -445,16 +543,16 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-ca8a5e4a";
+var __vue_scope_id__ = "data-v-6555a844";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-ca8a5e4a";
+var __vue_module_identifier__ = "data-v-6555a844";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
 /* style inject shadow dom */
 
-var __vue_component__ = normalizeComponent({
+var __vue_component__ = /*#__PURE__*/normalizeComponent({
   render: __vue_render__,
   staticRenderFns: __vue_staticRenderFns__
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, createInjectorSSR, undefined);// Import vue component

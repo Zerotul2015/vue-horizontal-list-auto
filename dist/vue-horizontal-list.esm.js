@@ -35,7 +35,7 @@ var script = {
      * {start: 1200, size: 5}]
      *
      *
-     * autotoggle
+     * autoplay
      * Auto change next slider
      * Example([enable(bool), timer ms, repeat(bool)]):
      * [true, 5000, false]
@@ -60,7 +60,17 @@ var script = {
       width: {
         container: 0,
         window: 576
-      }
+      },
+
+      /**
+       * Debounce timer of the scroll
+       */
+      scrollTimer: null,
+
+      /**
+       * Interval of the autoPlay
+       */
+      autoPlayInterval: null
     };
   },
 
@@ -73,31 +83,43 @@ var script = {
     this.$resize();
     window.addEventListener('resize', this.$resize);
 
-    if (this._options.autoToggle[0] && this._hasNext) {
-      setTimeout(r => {
-        this.next();
-      }, this._options.autoToggle[1]);
+    if (this._options.position.start) {
+      this.$nextTick(() => {
+        this.go(this._options.position.start);
+      });
+    }
+
+    if (this._options.autoplay.play) {
+      this.runAutoPlay();
     }
   },
 
   beforeDestroy() {
     window.removeEventListener('resize', this.$resize);
+
+    if (this.autoPlayInterval) {
+      clearInterval(this.autoPlayInterval);
+    }
   },
 
   computed: {
+    _items() {
+      return [...(this.$slots["start"] ? [{
+        type: "start"
+      }] : []), ...this.items.map(value => ({
+        type: "item",
+        item: value
+      })), ...(this.$slots["end"] ? [{
+        type: "end"
+      }] : [])];
+    },
+
+    _length() {
+      return this._items.length;
+    },
+
     _options() {
-      const options = this.options; //auto toggle sliders
-
-      let autoToggle = [false, 0, false]; //enable, timer ms, repeat
-
-      if (options.autotoggle && options.autotoggle[0] && options.autotoggle[1]) {
-        autoToggle = options.autotoggle;
-
-        if (options.autotoggle[3]) {
-          autoToggle[3] = true;
-        }
-      }
-
+      const options = this.options;
       let responsive1 = {
         end: 576,
         size: 1
@@ -145,7 +167,6 @@ var script = {
       }
 
       return {
-        autoToggle: autoToggle,
         navigation: {
           start: options && options.navigation && options.navigation.start || 992,
           color: options && options.navigation && options.navigation.color || '#000'
@@ -160,7 +181,15 @@ var script = {
           padding: options && options.list && options.list.padding || 24
         },
         responsive: [...(options && options.responsive || []), // Fallback default responsive
-        responsive1, responsive2, responsive3, responsive4, responsive5]
+        responsive1, responsive2, responsive3, responsive4, responsive5],
+        position: {
+          start: options?.position?.start ?? 0
+        },
+        autoplay: {
+          play: options?.autoplay?.play ?? false,
+          speed: options?.autoplay?.speed ?? 2000,
+          repeat: options?.autoplay?.repeat ?? false
+        }
       };
     },
 
@@ -238,17 +267,11 @@ var script = {
 
   },
   watch: {
-    position: function (newVal) {
-      if (this._options.autoToggle[0]) {
-        let timer = this._options.autoToggle[1];
-
-        if (this._hasNext) {
-          setTimeout(f => this.next(), timer);
-        } else {
-          if (this._options.autoToggle[3] && this._hasPrev) {
-            setTimeout(f => this.position = 0, timer);
-          }
-        }
+    "options.autoplay.play": function (newVal, oldVal) {
+      if (!newVal) {
+        this.stopAutoPlay();
+      } else {
+        this.runAutoPlay();
       }
     }
   },
@@ -268,6 +291,28 @@ var script = {
     },
 
     /**
+     * Run autoPlay slide show
+     */
+    runAutoPlay() {
+      this.autoPlayInterval = setInterval(function () {
+        if (this._options.autoplay.repeat && this.position === this._length - this._size) {
+          this.position = 0;
+          this.go(this.position);
+        } else {
+          this.position += 1;
+          this.go(this.position);
+        }
+      }.bind(this), this._options.autoplay.speed);
+    },
+
+    /**
+     * Stop autoPlay slide show
+     */
+    stopAutoPlay() {
+      clearInterval(this.autoPlayInterval);
+    },
+
+    /**
      * Go to a set of previous items
      */
     prev() {
@@ -279,6 +324,24 @@ var script = {
      */
     next() {
       this.go(this.position + this._size);
+    },
+
+    /**
+     * On horizontal scroll re-evaluate the actual position
+     */
+    scrollHandler() {
+      clearTimeout(this.scrollTimer); //Renew timer
+
+      this.scrollTimer = setTimeout(function () {
+        const parentLeftOffset = this.$refs["list"].getBoundingClientRect().left;
+
+        let items = this._items.map((item, index) => {
+          const itemLeftOffset = this.$refs.item[index].getBoundingClientRect().left;
+          return Math.abs(itemLeftOffset - parentLeftOffset);
+        });
+
+        this.position = items.indexOf(Math.min(...items));
+      }.bind(this), 50);
     }
 
   }
@@ -428,7 +491,7 @@ var __vue_render__ = function () {
     staticClass: "vue-horizontal-list vhl-btn-right--list"
   }, [_vm.width.window > _vm._options.navigation.start ? _c('div', {
     staticClass: "vhl-navigation"
-  }, [_vm._hasPrev ? _c('div', {
+  }, [_vm._t("nav-prev", [_vm._hasPrev ? _c('div', {
     staticClass: "vhl-btn-left vhl-btn-left-custom",
     on: {
       "click": _vm.prev
@@ -444,12 +507,12 @@ var __vue_render__ = function () {
     attrs: {
       "d": "M10.757 12l4.95 4.95a1 1 0 1 1-1.414 1.414l-5.657-5.657a1 1 0 0 1 0-1.414l5.657-5.657a1 1 0 0 1 1.414 1.414L10.757 12z"
     }
-  })])]) : _vm._e(), _vm._v(" "), _vm._hasNext ? _c('div', {
+  })])]) : _vm._e()])], 2) : _vm._e(), _vm._v(" "), _vm._hasNext ? _c('div', {
     staticClass: "vhl-btn-right vhl-btn-right-custom",
     on: {
       "click": _vm.next
     }
-  }, [_c('svg', {
+  }, [_vm._t("nav-next", [_c('svg', {
     attrs: {
       "fill": _vm._options.navigation.color,
       "width": "32px",
@@ -460,27 +523,7 @@ var __vue_render__ = function () {
     attrs: {
       "d": "M13.314 12.071l-4.95-4.95a1 1 0 0 1 1.414-1.414l5.657 5.657a1 1 0 0 1 0 1.414l-5.657 5.657a1 1 0 0 1-1.414-1.414l4.95-4.95z"
     }
-  })])]) : _vm._e()]) : _vm._e(), _vm._v(" "), _c('div', {
-    staticClass: "vhl-container",
-    style: _vm._style.container
-  }, [_c('div', {
-    ref: "list",
-    staticClass: "vhl-list",
-    class: _vm._options.list.class,
-    style: _vm._style.list
-  }, [_vm._l(_vm.items, function (item) {
-    return _c('div', {
-      ref: "item",
-      refInFor: true,
-      staticClass: "vhl-item",
-      class: _vm._options.item.class,
-      style: _vm._style.item
-    }, [_vm._t("default", [_vm._v(_vm._s(item))], {
-      "item": item
-    })], 2);
-  }), _vm._v(" "), _c('div', {
-    style: _vm._style.tail
-  })], 2)])]);
+  })])])], 2) : _vm._e()]);
 };
 
 var __vue_staticRenderFns__ = [];
@@ -488,8 +531,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-ca8a5e4a_0", {
-    source: ".vue-horizontal-list[data-v-ca8a5e4a]{position:relative}.vhl-navigation[data-v-ca8a5e4a]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-ca8a5e4a],.vhl-btn-right[data-v-ca8a5e4a]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-ca8a5e4a]:hover,.vhl-btn-right[data-v-ca8a5e4a]:hover{cursor:pointer}.vhl-btn-left[data-v-ca8a5e4a]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-ca8a5e4a]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-ca8a5e4a]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-ca8a5e4a]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-ca8a5e4a]{box-sizing:content-box}.vhl-list>*[data-v-ca8a5e4a]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-ca8a5e4a]{z-index:1}",
+  inject("data-v-6555a844_0", {
+    source: ".vue-horizontal-list[data-v-6555a844]{position:relative}.vhl-navigation[data-v-6555a844]{display:flex;align-items:center;position:absolute;width:100%;height:100%}.vhl-btn-left[data-v-6555a844],.vhl-btn-right[data-v-6555a844]{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:24px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);z-index:2}.vhl-btn-left[data-v-6555a844]:hover,.vhl-btn-right[data-v-6555a844]:hover{cursor:pointer}.vhl-btn-left[data-v-6555a844]{margin-left:-24px;margin-right:auto}.vhl-btn-right[data-v-6555a844]{margin-left:auto;margin-right:-24px}.vhl-container[data-v-6555a844]{overflow-y:hidden;height:100%;margin-bottom:-24px}.vhl-list[data-v-6555a844]{display:flex;padding-bottom:24px;margin-bottom:-24px;overflow-x:scroll;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}.vhl-item[data-v-6555a844]{box-sizing:content-box}.vhl-list>*[data-v-6555a844]{scroll-snap-align:start;flex-shrink:0}.vhl-item[data-v-6555a844]{z-index:1}",
     map: undefined,
     media: undefined
   });
@@ -497,7 +540,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-ca8a5e4a";
+const __vue_scope_id__ = "data-v-6555a844";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
@@ -508,7 +551,7 @@ const __vue_is_functional_template__ = false;
 
 /* style inject shadow dom */
 
-const __vue_component__ = normalizeComponent({
+const __vue_component__ = /*#__PURE__*/normalizeComponent({
   render: __vue_render__,
   staticRenderFns: __vue_staticRenderFns__
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, createInjector, undefined, undefined);
