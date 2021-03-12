@@ -91,10 +91,15 @@ export default {
      * {start: 1200, size: 5}]
      *
      *
-     * autoplay
      * Auto change next slider
-     * Example([enable(bool), timer ms, repeat(bool)]):
-     * [true, 5000, false]
+     * autoplay: {
+     * enable/disable playing slideshow
+     *  play: true,
+     *  the delay duration between slides in milliseconds
+     * speed: 1800,
+     * if setup, the slideshow will be in the loop.
+     * repeat: true,
+     * }
      *
      */
     options: {

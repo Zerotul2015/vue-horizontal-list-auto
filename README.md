@@ -55,16 +55,23 @@ const options = {
     {start: 992, end: 1200, size: 4},
     {start: 1200, size: 5}
   ],
-  autotoggle: [
-    false, //enable auto next slide
-    0,  // time for toggle ms
-    false   // repeat 
-  ],
   navigation: {
     // when to show navigation
     start: 992,
     color: '#000'
-  }
+  },
+  position: {
+    // Start from '1' on mounted.
+    start: 1,
+  },
+  autoplay: {
+    // enable/disable playing slideshow
+    play: true,
+    // the delay duration between slides in milliseconds
+    speed: 1800,
+    // if setup, the slideshow will be in the loop.
+    repeat: true,
+  },
 } 
 ```
 
