@@ -67,12 +67,12 @@
 
 <script>
   import Vue from 'vue';
-  import VueHorizontalList from '@/vue-horizontal-list.vue';
+  import VueHorizontalListAuto from '@/vue-horizontal-list-auto.vue';
 
   export default Vue.extend({
     name: 'ServeDev',
     components: {
-      VueHorizontalList
+      VueHorizontalListAuto
     },
     data() {
       return {
